@@ -5,7 +5,12 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig(({ command }) => ({
   // GitHub Pages serves this repository from /CampusPilot/.
   // Local Vite development still runs from the root path.
-  base: command === "build" ? "/CampusPilot/" : "/",
+  base:
+    process.env.BUILD_TARGET === "electron"
+      ? "./"
+      : command === "build"
+        ? "/CampusPilot/"
+        : "/",
   plugins: [react(), tailwindcss()],
   server: {
     allowedHosts: [

@@ -6,8 +6,59 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "prepare:desktop": "node electron/prepare-runtime.cjs",
+    "build:desktop": "cross-env BUILD_TARGET=electron tsc -b && vite build",
+    "build:server": "npm.cmd --prefix server run build",
+    "desktop": "npm run prepare:desktop && npm run build:desktop && npm run build:server && electron electron/main.cjs",
+    "package:windows": "npm run prepare:desktop && npm run build:desktop && npm run build:server && electron-builder --win nsis",
     "lint": "eslint .",
     "preview": "vite preview"
+  },
+  "main": "electron/main.cjs",
+  "build": {
+    "appId": "com.vedvyas.campuspilot",
+    "productName": "CampusPilot",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "electron/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "server/dist",
+        "to": "server/dist"
+      },
+      {
+        "from": "server/prisma",
+        "to": "server/prisma"
+      },
+      {
+        "from": "server/dev.db",
+        "to": "server/dev.db"
+      },
+      {
+        "from": "server/node_modules",
+        "to": "server/node_modules"
+      },
+      {
+        "from": "electron/runtime",
+        "to": "node"
+      }
+    ],
+    "asarUnpack": [
+      "**/server/node_modules/better-sqlite3/**"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "electron/assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.2",
@@ -24,6 +75,9 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "cross-env": "^10.1.0",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^10.6.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",

@@ -15,10 +15,20 @@ const port = process.env.PORT ?? 4000;
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://drama-leslie-convert-pray.trycloudflare.com",
-    ],
+    origin(origin, callback) {
+      const allowedOrigins = new Set([
+        "http://localhost:5173",
+        "https://drama-leslie-convert-pray.trycloudflare.com",
+        "null",
+      ]);
+
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Origin is not allowed by CampusPilot API."));
+    },
   }),
 );
 
